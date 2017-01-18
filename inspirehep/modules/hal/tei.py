@@ -72,8 +72,7 @@ def _get_domains(record):
 
 
 def _get_typology(record):
-    collections = [entry['primary'].lower()
-                   for entry in record.get('collections', [])]
+    collections = [entry['primary'].lower() for entry in record.get('collections', [])]
     inspire_to_hal = {
         'conferencepaper': "COMM",
         # Communication dans un congrès / Conference communication
@@ -112,12 +111,8 @@ def _parse_structures(record):
     for author in record.get('authors', []):
         for affiliation in author.get('affiliations', []):
             try:
-                recids.append(
-                    str(get_recid_from_ref(affiliation['record']))
-                )
-                affiliation['recid'] = get_recid_from_ref(
-                    affiliation['record']
-                )
+                recids.append(str(get_recid_from_ref(affiliation['record'])))
+                affiliation['recid'] = get_recid_from_ref(affiliation['record'])
             except KeyError:
                 continue
 
@@ -127,9 +122,7 @@ def _parse_structures(record):
         records = []
 
     for record in records:
-        structures.append(
-            _structure_data(record)
-        )
+        structures.append(_structure_data(record))
     return dedupe_list(structures)
 
 
@@ -166,17 +159,21 @@ def _conference_data(conf):
 
     # FIXME: Add conference city, country, and country code fields
     if ref:
-        return {'type': "conference",
-                'name': get_value(ref, "titles[0].title", ""),
-                'acronym': get_value(ref, "acronym[0]", ""),
-                'opening_date': get_value(ref, "opening_date", ""),
-                'closing_date': get_value(ref, "closing_date", "")}
+        return {
+            'type': "conference",
+            'name': get_value(ref, "titles[0].title", ""),
+            'acronym': get_value(ref, "acronym[0]", ""),
+            'opening_date': get_value(ref, "opening_date", ""),
+            'closing_date': get_value(ref, "closing_date", "")
+        }
     else:
-        return {'type': "conference",
-                'name': "",
-                'acronym': "",
-                'opening_date': "",
-                'closing_date': ""}
+        return {
+            'type': "conference",
+            'name': "",
+            'acronym': "",
+            'opening_date': "",
+            'closing_date': ""
+        }
 
 
 def _journal_data(pub_info):

@@ -32,6 +32,7 @@ __all__ = ['ArXivField']
 
 
 class ArXivField(INSPIREField, TextField):
+
     def __init__(self, **kwargs):
         defaults = dict(
             icon='barcode',

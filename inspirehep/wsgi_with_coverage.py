@@ -19,7 +19,6 @@
 # In applying this licence, CERN does not waive the privileges and immunities
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
-
 """INSPIREHEP WSGI app instantiation with support for coverage.py.
 
 Uses the trick in http://stackoverflow.com/a/20689873/1407497 to instantiate
@@ -32,7 +31,6 @@ import atexit
 
 import coverage
 
-
 cov = coverage.Coverage()
 cov.start()
 
@@ -42,5 +40,6 @@ from .wsgi import application  # noqa
 def save_coverage():
     cov.stop()
     cov.save()
+
 
 atexit.register(save_coverage)

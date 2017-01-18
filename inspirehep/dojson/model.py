@@ -19,7 +19,6 @@
 # In applying this licence, CERN does not waive the privileges and immunities
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
-
 """Filter-aware subclass of DoJSON's Overdo.
 
 Allows for a list of filters to be passed during instantiation,
@@ -49,6 +48,7 @@ class FilterOverdo(Overdo):
 
 
 def add_schema(schema):
+
     def _add_schema(record, blob):
         record['$schema'] = schema
         return record

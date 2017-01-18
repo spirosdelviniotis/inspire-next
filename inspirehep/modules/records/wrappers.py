@@ -50,8 +50,7 @@ class LiteratureRecord(ESRecord):
             parent_rec = {}
             conference_rec = {}
             if 'conference_record' in pub_info:
-                conference_rec = replace_refs(pub_info['conference_record'],
-                                              'es')
+                conference_rec = replace_refs(pub_info['conference_record'], 'es')
                 if conference_rec and conference_rec.get('control_number'):
                     conference_recid = conference_rec['control_number']
                 else:
@@ -67,10 +66,7 @@ class LiteratureRecord(ESRecord):
                     "conference_recid": conference_recid,
                     "conference_title": get_title(conference_rec),
                     "parent_recid": parent_recid,
-                    "parent_title":
-                        get_title(parent_rec).replace(
-                            "Proceedings, ", "", 1
-                    ),
+                    "parent_title": get_title(parent_rec).replace("Proceedings, ", "", 1),
                     "page_start": pub_info.get('page_start'),
                     "page_end": pub_info.get('page_end'),
                     "artid": pub_info.get('artid'),
@@ -89,16 +85,18 @@ class LiteratureRecord(ESRecord):
         pub_info_list = []
         for pub_info in self['publication_info']:
             if pub_info.get('journal_title', '') or pub_info.get('pubinfo_freetext', ''):
-                pub_info_list.append({
-                    'journal_title': pub_info.get('journal_title', ''),
-                    'journal_volume': pub_info.get('journal_volume', ''),
-                    'year': str(pub_info.get('year', '')),
-                    'journal_issue': pub_info.get('journal_issue', ''),
-                    'page_start': str(pub_info.get('page_start', '')),
-                    'page_end': str(pub_info.get('page_end', '')),
-                    'artid': pub_info.get('artid', ''),
-                    'pubinfo_freetext': pub_info.get('pubinfo_freetext', '')
-                })
+                pub_info_list.append(
+                    {
+                        'journal_title': pub_info.get('journal_title', ''),
+                        'journal_volume': pub_info.get('journal_volume', ''),
+                        'year': str(pub_info.get('year', '')),
+                        'journal_issue': pub_info.get('journal_issue', ''),
+                        'page_start': str(pub_info.get('page_start', '')),
+                        'page_end': str(pub_info.get('page_end', '')),
+                        'artid': pub_info.get('artid', ''),
+                        'pubinfo_freetext': pub_info.get('pubinfo_freetext', '')
+                    }
+                )
 
         return pub_info_list
 
@@ -131,19 +129,20 @@ class JobsRecord(ESRecord):
 
     @property
     def similar(self):
+
         def _build_query(id_):
             result = JobsSearch()
-            return result.query({
-                'more_like_this': {
-                    'docs': [
-                        {
+            return result.query(
+                {
+                    'more_like_this': {
+                        'docs': [{
                             '_id': id_,
-                        },
-                    ],
-                    'min_term_freq': 0,
-                    'min_doc_freq': 0,
+                        }, ],
+                        'min_term_freq': 0,
+                        'min_doc_freq': 0,
+                    }
                 }
-            })[0:2]
+            )[0:2]
 
         query = _build_query(self.get('control_number'))
         result = query.execute()

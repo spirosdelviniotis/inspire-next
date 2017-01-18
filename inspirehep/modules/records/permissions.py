@@ -28,11 +28,9 @@ from flask_security import current_user
 from werkzeug.local import LocalProxy
 
 from invenio_access.models import ActionUsers
-from invenio_access.permissions import (DynamicPermission,
-                                        ParameterizedActionNeed)
+from invenio_access.permissions import (DynamicPermission, ParameterizedActionNeed)
 
 from inspirehep.modules.cache import current_cache
-
 
 action_view_restricted_collection = ParameterizedActionNeed(
     'view-restricted-collection', argument=None
@@ -54,9 +52,12 @@ def load_user_collections(app, user):
     Receiver for flask_login.user_logged_in
     """
     user_collections = set(
-        [a.argument for a in ActionUsers.query.filter_by(
-            action='view-restricted-collection',
-            user_id=current_user.get_id()).all()]
+        [
+            a.argument
+            for a in ActionUsers.query.filter_by(
+                action='view-restricted-collection', user_id=current_user.get_id()
+            ).all()
+        ]
     )
     session['restricted_collections'] = user_collections
 
@@ -68,8 +69,8 @@ def load_restricted_collections():
     else:
         restricted_collections = set(
             [
-                a.argument for a in ActionUsers.query.filter_by(
-                    action='view-restricted-collection').all()
+                a.argument
+                for a in ActionUsers.query.filter_by(action='view-restricted-collection').all()
             ]
         )
         if restricted_collections:
@@ -77,7 +78,8 @@ def load_restricted_collections():
                 'restricted_collections',
                 restricted_collections,
                 timeout=current_app.config.get(
-                    'INSPIRE_COLLECTIONS_RESTRICTED_CACHE_TIMEOUT', 120)
+                    'INSPIRE_COLLECTIONS_RESTRICTED_CACHE_TIMEOUT', 120
+                )
             )
         return restricted_collections
 
@@ -126,11 +128,11 @@ class RecordPermission(object):
 
 def has_read_permission(user, record):
     """Check if user has read access to the record."""
+
     def _cant_view(collection):
         return not DynamicPermission(
-            ParameterizedActionNeed(
-                'view-restricted-collection',
-                collection)).can()
+            ParameterizedActionNeed('view-restricted-collection', collection)
+        ).can()
 
     user_roles = [r.name for r in current_user.roles]
     if 'superuser' in user_roles:
@@ -167,6 +169,7 @@ def has_admin_permission(user, record):
 #
 # Utility functions
 #
+
 
 def deny(user, record):
     """Deny access."""

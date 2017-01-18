@@ -19,16 +19,13 @@
 # In applying this licence, CERN does not waive the privileges and immunities
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction
-
 """API of Literature records."""
 
 from __future__ import absolute_import, division, print_function
 
 import json
 
-from inspirehep.modules.records.serializers.response import (
-    record_responsify_nocache,
-)
+from inspirehep.modules.records.serializers.response import (record_responsify_nocache, )
 from inspirehep.modules.search import LiteratureSearch
 from inspirehep.utils.record import get_title
 
@@ -44,7 +41,6 @@ from ..utils import (
 
 
 class APILiteratureCitesummary(object):
-
     """Implementation of citesummary for Literature records."""
 
     def serialize(self, pid, record, links_factory=None):
@@ -79,20 +75,21 @@ class APILiteratureCitesummary(object):
         for el in search.scan():
             result = el.to_dict()
 
-            citesummary[0]['citations'].append({
-                'collaboration': is_collaboration(result),
-                'core': is_core(result),
-                'date': get_date(result),
-                'document_type': get_document_type(result),
-                'id': get_id(result),
-                'subject': get_subject(result),
-                'selfcite': is_selfcite(record, result),
-                'title': get_title(result),
-            })
+            citesummary[0]['citations'].append(
+                {
+                    'collaboration': is_collaboration(result),
+                    'core': is_core(result),
+                    'date': get_date(result),
+                    'document_type': get_document_type(result),
+                    'id': get_id(result),
+                    'subject': get_subject(result),
+                    'selfcite': is_selfcite(record, result),
+                    'title': get_title(result),
+                }
+            )
 
         return json.dumps(citesummary)
 
 
 citesummary = APILiteratureCitesummary()
-citesummary_response = record_responsify_nocache(
-    citesummary, 'application/json')
+citesummary_response = record_responsify_nocache(citesummary, 'application/json')

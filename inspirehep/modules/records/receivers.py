@@ -19,7 +19,6 @@
 # In applying this licence, CERN does not waive the privileges and immunities
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
-
 """Record receivers."""
 
 from __future__ import absolute_import, division, print_function
@@ -88,12 +87,9 @@ def normalize_field_categories(sender, *args, **kwargs):
     Note that the valid `scheme`s are hardcoded in the schema, so any
     non-recognized scheme will fail schema validation.
     """
+
     def _is_normalized(field):
-        return (
-            field.get('scheme') == 'INSPIRE'
-            or '_scheme' in field
-            or '_term' in field
-        )
+        return (field.get('scheme') == 'INSPIRE' or '_scheme' in field or '_term' in field)
 
     for i, field in enumerate(sender.get('field_categories', [])):
         if _is_normalized(field):
@@ -130,12 +126,14 @@ def populate_inspire_subjects(sender, json, *args, **kwargs):
     faceting in the search interface. Valid terms on which to facet are
     only those that come from the INSPIRE scheme.
     """
+
     def _scheme_is_inspire(field):
         return field.get('scheme') == 'INSPIRE'
 
     inspire_subjects = [
         field['term'] for field in json.get('field_categories', [])
-        if _scheme_is_inspire(field) and field.get('term')]
+        if _scheme_is_inspire(field) and field.get('term')
+    ]
 
     json['facet_inspire_subjects'] = inspire_subjects
 
@@ -182,16 +180,13 @@ def populate_inspire_document_type(sender, json, *args, **kwargs):
           + -------- + -------- +
 
     """
-    def _was_not_published(json):
-        def _not_published(publication_info):
-            return (
-                'page_start' not in publication_info
-                and 'artid' not in publication_info
-            )
 
-        publication_infos = force_force_list(
-            get_value(json, 'publication_info')
-        )
+    def _was_not_published(json):
+
+        def _not_published(publication_info):
+            return ('page_start' not in publication_info and 'artid' not in publication_info)
+
+        publication_infos = force_force_list(get_value(json, 'publication_info'))
         not_published = map(_not_published, publication_infos)
 
         return all(not_published)
@@ -219,9 +214,7 @@ def populate_inspire_document_type(sender, json, *args, **kwargs):
 
     result = []
 
-    primary_collections = force_force_list(
-        get_value(json, 'collections.primary')
-    )
+    primary_collections = force_force_list(get_value(json, 'collections.primary'))
     normalized_collections = map(lambda el: el.lower(), primary_collections)
 
     for collection in normalized_collections:
@@ -246,6 +239,7 @@ def match_valid_experiments(sender, json, *args, **kwargs):
     FIXME: this is currently using a static Python dictionary, while it should
     use the current dynamic state of the Experiments collection.
     """
+
     def _normalize(experiment):
         try:
             result = EXPERIMENTS_MAP[experiment.lower().replace(' ', '')]
@@ -284,8 +278,9 @@ def dates_validator(sender, json, *args, **kwargs):
             valid_date = create_valid_date(json[date_key])
             if valid_date != json[date_key]:
                 current_app.logger.warning(
-                    'MALFORMED: %s value in %s: %s', date_key,
-                    json['control_number'], json[date_key])
+                    'MALFORMED: %s value in %s: %s', date_key, json['control_number'],
+                    json[date_key]
+                )
             json[date_key] = valid_date
 
 
@@ -296,6 +291,7 @@ def references_validator(sender, json, *args, **kwargs):
     is not composed uniquely of digits. If it wasn't, it is also removed from
     its reference.
     """
+
     def _is_not_made_of_digits(recid):
         return not six.text_type(recid).isdigit()
 
@@ -303,8 +299,9 @@ def references_validator(sender, json, *args, **kwargs):
         recid = reference.get('recid')
         if recid and _is_not_made_of_digits(recid):
             current_app.logger.warning(
-                'MALFORMED: recid value found in references of %s: %s',
-                json['control_number'], recid)
+                'MALFORMED: recid value found in references of %s: %s', json['control_number'],
+                recid
+            )
             del reference['recid']
 
 
@@ -328,9 +325,7 @@ def populate_recid_from_ref(sender, json, *args, **kwargs):
         {"records": [{"$ref": "http://x/y/1"}, {"$ref": "http://x/y/2"}]
          "recids": [1, 2]}
     """
-    list_ref_fields_translations = {
-        'deleted_records': 'deleted_recids'
-    }
+    list_ref_fields_translations = {'deleted_records': 'deleted_recids'}
 
     def _recusive_find_refs(json_root):
         if isinstance(json_root, list):
@@ -343,8 +338,7 @@ def populate_recid_from_ref(sender, json, *args, **kwargs):
             items = []
 
         for key, value in items:
-            if (isinstance(json_root, dict) and isinstance(value, dict) and
-                    '$ref' in value):
+            if (isinstance(json_root, dict) and isinstance(value, dict) and '$ref' in value):
                 # Append '_recid' and remove 'record' from the key name.
                 key_basename = key.replace('record', '').rstrip('_')
                 new_key = '{}_recid'.format(key_basename).lstrip('_')
@@ -372,16 +366,19 @@ def populate_experiment_suggest(sender, json, *args, **kwargs):
     # FIXME: Use a dedicated method when #1355 will be resolved.
     if 'experiments.json' in json.get('$schema'):
         experiment_names = get_value(json, 'experiment_names.title')
-        title_variants = force_force_list(
-            get_value(json, 'title_variants.title'))
+        title_variants = force_force_list(get_value(json, 'title_variants.title'))
 
-        json.update({
-            'experiment_suggest': {
-                'input': experiment_names + title_variants,
-                'output': experiment_names[0],
-                'payload': {'$ref': get_value(json, 'self.$ref')},
-            },
-        })
+        json.update(
+            {
+                'experiment_suggest': {
+                    'input': experiment_names + title_variants,
+                    'output': experiment_names[0],
+                    'payload': {
+                        '$ref': get_value(json, 'self.$ref')
+                    },
+                },
+            }
+        )
 
 
 def populate_abstract_source_suggest(sender, json, *args, **kwargs):
@@ -393,12 +390,14 @@ def populate_abstract_source_suggest(sender, json, *args, **kwargs):
         for abstract in abstracts:
             source = abstract.get('source')
             if source:
-                abstract.update({
-                    'abstract_source_suggest': {
-                        'input': source,
-                        'output': source,
-                    },
-                })
+                abstract.update(
+                    {
+                        'abstract_source_suggest': {
+                            'input': source,
+                            'output': source,
+                        },
+                    }
+                )
 
 
 @before_record_index.connect
@@ -413,8 +412,9 @@ def earliest_date(sender, json, *args, **kwargs):
         'imprints.date',
     ]
 
-    dates = list(chain.from_iterable(
-        [force_force_list(get_value(json, path)) for path in date_paths]))
+    dates = list(
+        chain.from_iterable([force_force_list(get_value(json, path)) for path in date_paths])
+    )
 
     earliest_date = create_earliest_date(dates)
     if earliest_date:

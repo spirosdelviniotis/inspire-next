@@ -19,7 +19,6 @@
 # In applying this licence, CERN does not waive the privileges and immunities
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
-
 """MARC 21 model definition."""
 
 from __future__ import absolute_import, division, print_function
@@ -34,6 +33,7 @@ from inspirehep.utils.helpers import force_force_list
 
 @hep.over('titles', '^(210|24[2567])[10_][0_]')
 def titles(self, key, value):
+
     def is_main_title(key):
         return key.startswith('245')
 
@@ -65,6 +65,7 @@ def titles(self, key, value):
 
 @hep2marc.over('246', '^titles$')
 def titles2marc(self, key, value):
+
     def get_transformed_title(val):
         return {
             'a': val.get('title'),
@@ -81,6 +82,7 @@ def titles2marc(self, key, value):
 
 @hep2marc.over('242', r'^title_translations$')
 def title_translations2marc(self, key, value):
+
     def get_transformed_title(val):
         return {
             'a': val.get('title'),

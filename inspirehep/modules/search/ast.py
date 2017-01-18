@@ -21,7 +21,6 @@
 # In applying this license, CERN does not
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
-
 """INSPIRE search ast custom classes."""
 
 from __future__ import absolute_import, division, print_function
@@ -30,11 +29,11 @@ from invenio_query_parser.ast import BinaryOp
 
 
 class SpiresOp(BinaryOp):
+
     @property
     def keyword(self):
         return self.left
 
 
 class FilterOp(BinaryOp):
-
     """Special BinaryOp used to setup filtering queries."""

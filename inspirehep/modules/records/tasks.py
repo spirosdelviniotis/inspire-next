@@ -19,7 +19,6 @@
 # In applying this licence, CERN does not waive the privileges and immunities
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
-
 """Records tasks."""
 
 from __future__ import absolute_import, division, print_function
@@ -38,7 +37,6 @@ from inspirehep.modules.pidstore.utils import (
     get_index_from_endpoint,
 )
 from inspirehep.modules.records.api import InspireRecord
-
 
 logger = get_task_logger(__name__)
 
@@ -62,6 +60,7 @@ def update_refs(old_ref, new_ref):
 
 
 def update_links(record, old_ref, new_ref):
+
     def _update_links(record, parts, old_ref, new_ref):
         for i, part in enumerate(parts):
             if isinstance(record, dict):
@@ -85,7 +84,9 @@ def update_links(record, old_ref, new_ref):
 
 
 def get_records_to_update(old_ref):
+
     def _get_uuids_to_update(old_ref):
+
         def _replace_record_with_recid(path):
             return path.replace('record', 'recid')
 

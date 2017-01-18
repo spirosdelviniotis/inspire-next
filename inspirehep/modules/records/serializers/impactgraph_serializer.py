@@ -19,7 +19,6 @@
 # In applying this licence, CERN does not waive the privileges and immunities
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
-
 """Impact Graph serializer for records."""
 
 from __future__ import absolute_import, division, print_function
@@ -32,7 +31,6 @@ from inspirehep.modules.search import LiteratureSearch
 
 
 class ImpactGraphSerializer(object):
-
     """Impact Graph serializer for records."""
 
     def serialize(self, pid, record, links_factory=None):
@@ -54,16 +52,9 @@ class ImpactGraphSerializer(object):
         # Get citations
         citations = []
 
-        record_citations = LiteratureSearch().query_from_iq(
-            'refersto:' + str(record['control_number'])
-        ).params(
-            size=9999,
-            _source=[
-                'control_number',
-                'citation_count',
-                'titles',
-                'earliest_date'
-            ]
+        record_citations = LiteratureSearch(
+        ).query_from_iq('refersto:' + str(record['control_number'])).params(
+            size=9999, _source=['control_number', 'citation_count', 'titles', 'earliest_date']
         ).execute().hits
 
         for citation in record_citations:
@@ -71,12 +62,14 @@ class ImpactGraphSerializer(object):
                 citation_count = citation.citation_count
             except AttributeError:
                 citation_count = 0
-            citations.append({
-                "inspire_id": citation['control_number'],
-                "citation_count": citation_count,
-                "title": get_title(citation.to_dict()),
-                "year": citation['earliest_date'].split('-')[0]
-            })
+            citations.append(
+                {
+                    "inspire_id": citation['control_number'],
+                    "citation_count": citation_count,
+                    "title": get_title(citation.to_dict()),
+                    "year": citation['earliest_date'].split('-')[0]
+                }
+            )
 
         out['citations'] = citations
 
@@ -84,20 +77,13 @@ class ImpactGraphSerializer(object):
         record_references = record.get('references', [])
         references = []
 
-        reference_recids = [
-            ref['recid'] for ref in record_references if ref.get('recid')
-        ]
+        reference_recids = [ref['recid'] for ref in record_references if ref.get('recid')]
 
         if reference_recids:
             record_references = get_es_records(
                 'lit',
                 reference_recids,
-                _source=[
-                    'control_number',
-                    'citation_count',
-                    'titles',
-                    'earliest_date'
-                ]
+                _source=['control_number', 'citation_count', 'titles', 'earliest_date']
             )
 
             for reference in record_references:
@@ -105,12 +91,14 @@ class ImpactGraphSerializer(object):
                     citation_count = reference.citation_count
                 except AttributeError:
                     citation_count = 0
-                references.append({
-                    "inspire_id": reference['control_number'],
-                    "citation_count": citation_count,
-                    "title": get_title(reference),
-                    "year": reference['earliest_date'].split('-')[0]
-                })
+                references.append(
+                    {
+                        "inspire_id": reference['control_number'],
+                        "citation_count": citation_count,
+                        "title": get_title(reference),
+                        "year": reference['earliest_date'].split('-')[0]
+                    }
+                )
 
         out['references'] = references
 

@@ -19,7 +19,6 @@
 # In applying this licence, CERN does not waive the privileges and immunities
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
-
 """Resource-aware json reference loaders to be used with jsonref."""
 
 from __future__ import absolute_import, division, print_function
@@ -42,8 +41,7 @@ class RecordGetterError(Exception):
 
     def __repr__(self):
         return '{} caused by {}'.format(
-            super(RecordGetterError, self).__repr__(),
-            repr(self.cause)
+            super(RecordGetterError, self).__repr__(), repr(self.cause)
         )
 
     def __str__(self):
@@ -51,6 +49,7 @@ class RecordGetterError(Exception):
 
 
 def raise_record_getter_error_and_log(f):
+
     @wraps(f)
     def wrapper(*args, **kwargs):
         try:
@@ -77,8 +76,7 @@ def get_es_records(pid_type, recids, **kwargs):
     """Get a list of recids from ElasticSearch."""
     recids = [str(recid) for recid in recids]
     uuids = PersistentIdentifier.query.filter(
-        PersistentIdentifier.pid_value.in_(recids),
-        PersistentIdentifier.pid_type == pid_type
+        PersistentIdentifier.pid_value.in_(recids), PersistentIdentifier.pid_type == pid_type
     ).all()
     uuids = [str(uuid.object_uuid) for uuid in uuids]
 

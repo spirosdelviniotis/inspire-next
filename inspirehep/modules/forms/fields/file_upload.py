@@ -27,6 +27,7 @@ __all__ = ['FileUploadField']
 
 
 class FileUploadField(INSPIREField, FileField):
+
     def __init__(self, **kwargs):
         import warnings
         warnings.warn("Field has been deprecated", PendingDeprecationWarning)

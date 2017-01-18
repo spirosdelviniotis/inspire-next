@@ -19,7 +19,6 @@
 # In applying this licence, CERN does not waive the privileges and immunities
 # granted to it by virtue of its status as an Intergovernmental Organization
 # or submit itself to any jurisdiction.
-
 """DoJSON model definition for conferences."""
 
 from __future__ import absolute_import, division, print_function
@@ -28,6 +27,7 @@ from ..model import FilterOverdo, add_schema, clean_record
 
 
 def remove_lone_series_number(record, blob):
+
     def _valid(series):
         return series.get('name')
 
