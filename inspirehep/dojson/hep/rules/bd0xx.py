@@ -367,19 +367,20 @@ def report_numbers2marc(self, key, value):
 
 
 @hep.over('languages', '^041..')
+@utils.flatten
+@utils.for_each_value
 def languages(self, key, value):
-    languages = self.get('languages', [])
+    result = []
 
-    values = force_force_list(value.get('a'))
-    for value in values:
-        for language in RE_LANGUAGE.split(value):
+    for a_value in force_force_list(value.get('a')):
+        for language in RE_LANGUAGE.split(a_value):
             try:
                 name = language.strip().capitalize()
-                languages.append(pycountry.languages.get(name=name).alpha_2)
+                result.append(pycountry.languages.get(name=name).alpha_2)
             except KeyError:
                 pass
 
-    return languages
+    return result
 
 
 @hep2marc.over('041', '^languages$')
