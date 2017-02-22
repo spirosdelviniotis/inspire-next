@@ -44,6 +44,8 @@ ORCID = re.compile('\d{4}-\d{4}-\d{4}-\d{3}[0-9Xx]')
 
 
 @hep.over('authors', '^[17]0[01]..')
+@utils.flatten
+@utils.for_each_value
 def authors(self, key, value):
     def _get_author(value):
         def _get_affiliations(value):
@@ -175,13 +177,7 @@ def authors(self, key, value):
             'raw_affiliations': _get_raw_affiliations(value),
         }
 
-    authors = self.get('authors', [])
-
-    values = force_force_list(value)
-    for value in values:
-        authors.append(_get_author(value))
-
-    return authors
+    return [_get_author(value)]
 
 
 @hep2marc.over('100', '^authors$')
