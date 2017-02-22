@@ -39,9 +39,9 @@ from ...utils import (
 
 
 @hep.over('collaborations', '^710[10_2][_2]')
+@utils.flatten
+@utils.for_each_value
 def collaboration(self, key, value):
-    value = force_force_list(value)
-
     def get_value(value):
         recid = None
         if '0' in value:
@@ -53,13 +53,8 @@ def collaboration(self, key, value):
             'value': value.get('g'),
             'record': get_record_ref(recid, 'experiments')
         }
-    collaboration = self.get('collaborations', [])
 
-    filtered_value = value
-    for element in filtered_value:
-        collaboration.append(get_value(element))
-
-    return collaboration
+    return [get_value(value)]
 
 
 @hep2marc.over('710', 'collaborations')
