@@ -35,6 +35,8 @@ from ..model import hep, hep2marc
 
 
 @hep.over('titles', '^(210|24[2567])[10_][0_]')
+@utils.flatten
+@utils.for_each_value
 def titles(self, key, value):
     def is_main_title(key):
         return key.startswith('245')
@@ -42,27 +44,25 @@ def titles(self, key, value):
     def is_translated_title(key):
         return key.startswith('242')
 
-    titles = self.setdefault('titles', [])
-    values = force_force_list(value)
-    for val in values:
-        title_obj = {
-            'title': val.get('a'),
-            'subtitle': force_single_element(val.get('b')),  # FIXME: #1484
-            'source': val.get('9'),
-        }
-        if is_main_title(key):
-            titles.insert(0, title_obj)
-        elif is_translated_title(key):
-            title = val.get('a')
-            if title:
-                lang = langdetect.detect(title)
-                if lang:
-                    title_obj['language'] = lang
-                    self.setdefault('title_translations', []).append(title_obj)
-        else:
-            titles.append(title_obj)
+    result = []
+    title_obj = {
+        'title': value.get('a'),
+        'subtitle': force_single_element(value.get('b')),  # FIXME: #1484
+        'source': value.get('9'),
+    }
+    if is_main_title(key):
+        result.insert(0, title_obj)
+    elif is_translated_title(key):
+        title = value.get('a')
+        if title:
+            lang = langdetect.detect(title)
+            if lang:
+                title_obj['language'] = lang
+                self.setdefault('title_translations', []).append(title_obj)
+    else:
+        result.append(title_obj)
 
-    return titles
+    return result
 
 
 @hep2marc.over('246', '^titles$')
@@ -82,6 +82,8 @@ def titles2marc(self, key, value):
 
 
 @hep2marc.over('242', r'^title_translations$')
+@utils.flatten
+@utils.for_each_value
 def title_translations2marc(self, key, value):
     def get_transformed_title(val):
         return {
@@ -90,8 +92,7 @@ def title_translations2marc(self, key, value):
             '9': val.get('source'),
         }
 
-    values = force_force_list(value)
-    return [get_transformed_title(value) for value in values]
+    return [get_transformed_title(value)]
 
 
 @hep.over('edition', '^250..')
