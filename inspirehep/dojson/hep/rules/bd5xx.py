@@ -38,6 +38,8 @@ logger = logging.getLogger(__name__)
 
 
 @hep.over('_private_notes', '^595..')
+@utils.flatten
+@utils.for_each_value
 def private_notes(self, key, value):
     def _private_notes(value):
         def _private_note(value, a=None):
@@ -54,10 +56,10 @@ def private_notes(self, key, value):
         else:
             return [_private_note(value)]
 
-    private_notes = self.get('_private_notes', [])
-    private_notes.extend(_private_notes(value))
+    result = []
+    result.extend(_private_notes(value))
 
-    return private_notes
+    return result
 
 
 @hep2marc.over('595', '_private_notes')
