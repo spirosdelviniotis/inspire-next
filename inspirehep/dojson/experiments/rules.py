@@ -36,18 +36,17 @@ from ..utils import force_single_element, get_record_ref
 
 
 @experiments.over('_date_started', '^046..')
+@utils.flatten
+@utils.for_each_value
 def date_started(self, key, value):
-    values = force_force_list(value)
-
-    for val in values:
-        if val.get('q'):
-            self['date_proposed'] = val.get('q')
-        if val.get('r'):
-            self['date_approved'] = val.get('r')
-        if val.get('s'):
-            self['date_started'] = val.get('s')
-        if val.get('t'):
-            self['date_completed'] = val.get('t')
+    if value.get('q'):
+        self['date_proposed'] = value.get('q')
+    if value.get('r'):
+        self['date_approved'] = value.get('r')
+    if value.get('s'):
+        self['date_started'] = value.get('s')
+    if value.get('t'):
+        self['date_completed'] = value.get('t')
 
     raise IgnoreKey
 
