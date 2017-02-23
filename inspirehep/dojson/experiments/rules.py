@@ -75,16 +75,16 @@ def experiment_names(self, key, value):
 
 
 @experiments.over('titles', '^(245|419)..')
+@utils.flatten
+@utils.for_each_value
 def titles(self, key, value):
-    titles = self.get('titles', [])
+    result = []
+    if key.startswith('245'):
+        result.insert(0, {'title': value.get('a')})
+    else:
+        result.append({'title': value.get('a')})
 
-    for value in force_force_list(value):
-        if key.startswith('245'):
-            titles.insert(0, {'title': value.get('a')})
-        else:
-            titles.append({'title': value.get('a')})
-
-    return titles
+    return result
 
 
 @experiments.over('contact_details', '^270..')
