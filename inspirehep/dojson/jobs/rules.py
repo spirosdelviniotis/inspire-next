@@ -171,11 +171,12 @@ def position(self, key, value):
 
 
 @jobs.over('ranks', '^656..')
+@utils.flatten
+@utils.for_each_value
 def ranks(self, key, value):
-    ranks = self.get('ranks', [])
+    result = []
 
-    for value in force_force_list(value):
-        for rank in force_force_list(value.get('a')):
-            ranks.append(classify_rank(rank))
+    for rank in force_force_list(value.get('a')):
+        result.append(classify_rank(rank))
 
-    return ranks
+    return result
