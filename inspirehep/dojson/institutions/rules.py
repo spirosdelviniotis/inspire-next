@@ -216,11 +216,10 @@ def related_institutes(self, key, value):
 
 
 @institutions.over('historical_data', '^6781.')
+@utils.flatten
+@utils.for_each_value
 def historical_data(self, key, value):
-    values = self.get('historical_data', [])
-    values.extend(el for el in force_force_list(value.get('a')))
-
-    return values
+    return [el for el in force_force_list(value.get('a'))]
 
 
 @institutions.over('core', '^690C.')
