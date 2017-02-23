@@ -232,6 +232,8 @@ def _public_notes2marc(self, key, value):
 
 
 @hepnames.over('source', '^670..')
+@utils.flatten
+@utils.for_each_value
 def source(self, key, value):
     def _get_source(value):
         return {
@@ -239,13 +241,7 @@ def source(self, key, value):
             'date_verified': value.get('d'),
         }
 
-    source = self.get('source', [])
-
-    values = force_force_list(value)
-    for value in values:
-        source.append(_get_source(value))
-
-    return source
+    return [_get_source(value)]
 
 
 @hepnames2marc.over('670', '^source$')
